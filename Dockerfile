@@ -1,4 +1,4 @@
-# Stage 1: Build static musl dependencies and FFmpeg
+# Stage 1: Build static musl FFmpeg using Alpine static packages
 FROM alpine:3.20 AS builder
 
 RUN apk add --no-cache \
@@ -7,22 +7,10 @@ RUN apk add --no-cache \
     yasm \
     git \
     pkgconf \
-    cmake \
-    coreutils
+    coreutils \
+    x264-dev
 
-# 1. Compile static x264
-RUN git clone --depth 1 --branch stable https://code.videolan.org/videolan/x264.git /src/x264 \
-    && cd /src/x264 \
-    && ./configure \
-        --prefix=/usr/local \
-        --enable-static \
-        --enable-pic \
-        --disable-cli \
-        --disable-shared \
-    && make -j$(nproc) \
-    && make install
-
-# 2. Clone and compile FFmpeg release
+# Clone and compile FFmpeg release
 # Flag pangkas --disable-everything: hanya aktifkan codec & filter yang dipakai Vidme
 ENV FFMPEG_VERSION=7.1
 
